@@ -1,0 +1,7 @@
+.DS_Store
+*.swp
+build/
+*.xcodeproj/*.mode1v3
+*.xcodeproj/*.pbxuser
+*.xcodeproj/*.perspectivev3
+
