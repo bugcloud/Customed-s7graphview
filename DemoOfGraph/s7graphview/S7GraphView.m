@@ -228,7 +228,7 @@
 	
 	NSArray *xValues = [self.dataSource graphViewXValues:self];
 	NSUInteger xValuesCount = xValues.count;
-	
+    
 	if (xValuesCount > [self.dataSource graphViewMaximumNumberOfXaxisValues:self]) {
 		
 		NSUInteger stepCount = [self.dataSource graphViewMaximumNumberOfXaxisValues:self];
@@ -292,7 +292,7 @@
 			NSString *valueString;
 			
 			if (_xValuesFormatter) {
-				valueString = [_xValuesFormatter stringForObjectValue:valueToFormat];
+                valueString = [_xValuesFormatter stringForObjectValue:valueToFormat];
 			} else {
 				valueString = [NSString stringWithFormat:@"%@", valueToFormat];
 			}
@@ -333,53 +333,59 @@
 		}
 		
 		CGColorRef plotColor = [S7GraphView colorByIndex:plotIndex].CGColor;
-		
-		for (NSUInteger valueIndex = 0; valueIndex < values.count - 1; valueIndex++) {
+        int numberDataCount = 0;
+        for (NSUInteger valueIndex = 0; valueIndex < values.count - 1; valueIndex++) {
             if ([@"NSCFNumber" isEqualToString:NSStringFromClass([[values objectAtIndex:valueIndex] class])] || [@"NSNumber" isEqualToString:NSStringFromClass([[values objectAtIndex:valueIndex] class])]) {
-                NSUInteger x = valueIndex * stepX;
-                NSUInteger y = [[values objectAtIndex:valueIndex] intValue] * stepY;
-                
-                CGContextSetLineWidth(c, 1.5f);
-                
-                CGPoint startPoint = CGPointMake(x + offsetX, self.frame.size.height - y - offsetY);
-                CGPoint endPoint;
-                if ([@"NSCFNumber" isEqualToString:NSStringFromClass([[values objectAtIndex:valueIndex + 1] class])] || [@"NSNumber" isEqualToString:NSStringFromClass([[values objectAtIndex:valueIndex + 1] class])]) {
-                    x = (valueIndex + 1) * stepX;
-                    y = [[values objectAtIndex:valueIndex + 1] intValue] * stepY;
+                numberDataCount++;
+            }
+        }
+		if (numberDataCount >= 3) {
+            for (NSUInteger valueIndex = 0; valueIndex < values.count - 1; valueIndex++) {
+                if ([@"NSCFNumber" isEqualToString:NSStringFromClass([[values objectAtIndex:valueIndex] class])] || [@"NSNumber" isEqualToString:NSStringFromClass([[values objectAtIndex:valueIndex] class])]) {
+                    NSUInteger x = valueIndex * stepX;
+                    NSUInteger y = [[values objectAtIndex:valueIndex] intValue] * stepY;
                     
-                    endPoint = CGPointMake(x + offsetX, self.frame.size.height - y - offsetY);                    
-                } else {
-                    for (NSUInteger idx = valueIndex+1; idx < values.count; idx++) {
-                        if ([@"NSCFNumber" isEqualToString:NSStringFromClass([[values objectAtIndex:idx] class])] || [@"NSNumber" isEqualToString:NSStringFromClass([[values objectAtIndex:idx] class])]) {
-                            x = idx * stepX;
-                            y = [[values objectAtIndex:idx] intValue] * stepY;
-                            endPoint = CGPointMake(x + offsetX, self.frame.size.height - y - offsetY);
-                            break;
+                    CGContextSetLineWidth(c, 1.5f);
+                    
+                    CGPoint startPoint = CGPointMake(x + offsetX, self.frame.size.height - y - offsetY);
+                    CGPoint endPoint;
+                    if ([@"NSCFNumber" isEqualToString:NSStringFromClass([[values objectAtIndex:valueIndex + 1] class])] || [@"NSNumber" isEqualToString:NSStringFromClass([[values objectAtIndex:valueIndex + 1] class])]) {
+                        x = (valueIndex + 1) * stepX;
+                        y = [[values objectAtIndex:valueIndex + 1] intValue] * stepY;
+                        endPoint = CGPointMake(x + offsetX, self.frame.size.height - y - offsetY);                    
+                    } else {
+                        for (NSUInteger idx = valueIndex+1; idx < values.count; idx++) {
+                            if ([@"NSCFNumber" isEqualToString:NSStringFromClass([[values objectAtIndex:idx] class])] || [@"NSNumber" isEqualToString:NSStringFromClass([[values objectAtIndex:idx] class])]) {
+                                x = idx * stepX;
+                                y = [[values objectAtIndex:idx] intValue] * stepY;
+                                endPoint = CGPointMake(x + offsetX, self.frame.size.height - y - offsetY);
+                                break;
+                            }
                         }
                     }
-                }
-                
-                CGContextMoveToPoint(c, startPoint.x, startPoint.y);
-
-                CGContextAddLineToPoint(c, endPoint.x, endPoint.y);
-                CGContextClosePath(c);
-                
-                CGContextSetStrokeColorWithColor(c, plotColor);
-                CGContextStrokePath(c);
-                
-                if (shouldFill) {
                     
-                    CGContextMoveToPoint(c, startPoint.x, self.frame.size.height - offsetY);
-                    CGContextAddLineToPoint(c, startPoint.x, startPoint.y);
+                    CGContextMoveToPoint(c, startPoint.x, startPoint.y);
+                    
                     CGContextAddLineToPoint(c, endPoint.x, endPoint.y);
-                    CGContextAddLineToPoint(c, endPoint.x, self.frame.size.height - offsetY);
                     CGContextClosePath(c);
                     
-                    CGContextSetFillColorWithColor(c, plotColor);
-                    CGContextFillPath(c);
+                    CGContextSetStrokeColorWithColor(c, plotColor);
+                    CGContextStrokePath(c);
+                    
+                    if (shouldFill) {
+                        
+                        CGContextMoveToPoint(c, startPoint.x, self.frame.size.height - offsetY);
+                        CGContextAddLineToPoint(c, startPoint.x, startPoint.y);
+                        CGContextAddLineToPoint(c, endPoint.x, endPoint.y);
+                        CGContextAddLineToPoint(c, endPoint.x, self.frame.size.height - offsetY);
+                        CGContextClosePath(c);
+                        
+                        CGContextSetFillColorWithColor(c, plotColor);
+                        CGContextFillPath(c);
+                    }
                 }
             }
-		}
+        }
 	}
 	
 	if (_drawInfo) {
