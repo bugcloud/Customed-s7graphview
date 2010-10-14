@@ -334,12 +334,12 @@
 		
 		CGColorRef plotColor = [S7GraphView colorByIndex:plotIndex].CGColor;
         int numberDataCount = 0;
-        for (NSUInteger valueIndex = 0; valueIndex < values.count - 1; valueIndex++) {
+        for (NSUInteger valueIndex = 0; valueIndex < values.count; valueIndex++) {
             if ([@"NSCFNumber" isEqualToString:NSStringFromClass([[values objectAtIndex:valueIndex] class])] || [@"NSNumber" isEqualToString:NSStringFromClass([[values objectAtIndex:valueIndex] class])]) {
                 numberDataCount++;
             }
         }
-		if (numberDataCount >= 3) {
+		if (numberDataCount >= 2) {
             for (NSUInteger valueIndex = 0; valueIndex < values.count - 1; valueIndex++) {
                 if ([@"NSCFNumber" isEqualToString:NSStringFromClass([[values objectAtIndex:valueIndex] class])] || [@"NSNumber" isEqualToString:NSStringFromClass([[values objectAtIndex:valueIndex] class])]) {
                     NSUInteger x = valueIndex * stepX;
