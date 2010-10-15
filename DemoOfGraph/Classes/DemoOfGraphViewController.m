@@ -34,10 +34,15 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.graphView_ = [[S7GraphView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 170.0f)];
+    [scrollView_ setMinimumZoomScale:0.5f];
+    [scrollView_ setMaximumZoomScale:5.0f];
+    [scrollView_ setDelegate:self];
+    
+    self.graphView_ = [[S7GraphView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 960.0f, 170.0f)];
     self.graphView_.dataSource = self;
     self.graphView_.delegate = self;
-    [self.view addSubview:self.graphView_];
+    [scrollView_ addSubview:self.graphView_];
+    [scrollView_ setContentSize:CGSizeMake(960.0f, 170.0f)];
     
     self.graphView_.backgroundColor = [UIColor blackColor];
     
@@ -79,6 +84,10 @@
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 */
+#pragma mark delegate UIScrollView
+- (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
+    return self.graphView_;
+}
 
 #pragma mark protocol S7GraphViewDataSource
 
@@ -88,7 +97,7 @@
 
 - (NSUInteger)graphViewNumberOfPlots:(S7GraphView *)graphView {
     /* Return the number of plots you are going to have in the view. 1+ */
-    return 1;
+    return 2;
 }
 
 - (NSArray *)graphViewXValues:(S7GraphView *)graphView {
@@ -112,6 +121,21 @@
             for (GraphInfo *gInfo in graphInfoList_.list_) {
                 [array addObject:[NSNumber numberWithFloat:gInfo.value_]];
             }
+            break;
+        case 1:{
+            for (int i=0; i<[graphInfoList_.list_ count]; i++) {
+                if (i==0) {
+                    [array addObject:[NSNumber numberWithFloat:1.1f]];
+                } else if (i==[graphInfoList_.list_ count]-1) {
+                    [array addObject:[NSNumber numberWithFloat:10.1f]];
+                } else {
+                    // if you add empty string, a graph will be drawn using next x value.
+                    [array addObject:@""];
+                }
+
+            }
+            break;
+        }
     }
     return [array autorelease];
 }
