@@ -7,6 +7,8 @@ I costomed s7graphview blow.
  * You can define X and Y axis's unit.
  * You can touch the point of graph.
    You will draw plot's info writing delegate I added.
+ * If you have emtpy for the value for X axis, s7graphview will ignore the empty value and
+   draw line using next X axis's point that have not empty value.
 
 ** how to use
   See demo(DemoOfGraph).
