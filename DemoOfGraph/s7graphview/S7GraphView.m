@@ -150,6 +150,10 @@
 			if ([[values objectAtIndex:valueIndex] floatValue] > maxY) {
 				maxY = [[values objectAtIndex:valueIndex] floatValue];
 			}
+            
+            if ([[values objectAtIndex:valueIndex] floatValue] < minY) {
+				minY = [[values objectAtIndex:valueIndex] floatValue];
+			}
 		}
 	}
 	
@@ -168,14 +172,30 @@
 	if (maxY > 10000 && maxY < 100000) {
 		maxY = ceil(maxY / 10000) * 10000;
 	}
+    
+    if (minY < 0 && minY > -100) {
+		minY = floor(minY / 10) * 10;
+	} 
 	
+	if (minY < -100 && minY > -1000) {
+		minY = floor(minY / 100) * 100;
+	} 
+	
+	if (minY < -1000 && minY > -10000) {
+		minY = floor(minY / 1000) * 1000;
+	}
+	
+	if (minY < -10000 && minY > -100000) {
+		minY = floor(minY / 10000) * 10000;
+	}
+    
 	CGFloat step = (maxY - minY) / 5;
-	CGFloat stepY = (self.frame.size.height - (offsetY * 2)) / maxY;
-	
+	CGFloat stepY = (self.frame.size.height - (offsetY * 2)) / (maxY - minY);
+    
+    NSInteger value = minY - step;
 	for (NSUInteger i = 0; i < 6; i++) {
-		
-		NSUInteger y = (i * step) * stepY;
-		NSUInteger value = i * step;
+        NSInteger y = (i * step) * stepY;
+		value = value + step;
 		
 		if (_drawGridY) {
 			
@@ -197,7 +217,7 @@
 			CGContextStrokePath(c);
 		}
 		
-		if (i > 0 && _drawAxisY) {
+		if (i >= 0 && _drawAxisY) {
 			
 			NSNumber *valueToFormat = [NSNumber numberWithInt:value];
 			NSString *valueString;
@@ -343,7 +363,7 @@
             for (NSUInteger valueIndex = 0; valueIndex < values.count - 1; valueIndex++) {
                 if ([@"NSCFNumber" isEqualToString:NSStringFromClass([[values objectAtIndex:valueIndex] class])] || [@"NSNumber" isEqualToString:NSStringFromClass([[values objectAtIndex:valueIndex] class])]) {
                     NSUInteger x = valueIndex * stepX;
-                    NSUInteger y = [[values objectAtIndex:valueIndex] intValue] * stepY;
+                    NSInteger y = ([[values objectAtIndex:valueIndex] intValue] - minY) * stepY;
                     
                     CGContextSetLineWidth(c, 1.5f);
                     
@@ -351,13 +371,13 @@
                     CGPoint endPoint;
                     if ([@"NSCFNumber" isEqualToString:NSStringFromClass([[values objectAtIndex:valueIndex + 1] class])] || [@"NSNumber" isEqualToString:NSStringFromClass([[values objectAtIndex:valueIndex + 1] class])]) {
                         x = (valueIndex + 1) * stepX;
-                        y = [[values objectAtIndex:valueIndex + 1] intValue] * stepY;
+                        y = ([[values objectAtIndex:valueIndex + 1] intValue] - minY) * stepY;
                         endPoint = CGPointMake(x + offsetX, self.frame.size.height - y - offsetY);                    
                     } else {
                         for (NSUInteger idx = valueIndex+1; idx < values.count; idx++) {
                             if ([@"NSCFNumber" isEqualToString:NSStringFromClass([[values objectAtIndex:idx] class])] || [@"NSNumber" isEqualToString:NSStringFromClass([[values objectAtIndex:idx] class])]) {
                                 x = idx * stepX;
-                                y = [[values objectAtIndex:idx] intValue] * stepY;
+                                y = ([[values objectAtIndex:idx] intValue] - minY) * stepY;
                                 endPoint = CGPointMake(x + offsetX, self.frame.size.height - y - offsetY);
                                 break;
                             }
