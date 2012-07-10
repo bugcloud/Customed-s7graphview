@@ -355,13 +355,13 @@
 		CGColorRef plotColor = [S7GraphView colorByIndex:plotIndex].CGColor;
         int numberDataCount = 0;
         for (NSUInteger valueIndex = 0; valueIndex < values.count; valueIndex++) {
-            if ([@"NSCFNumber" isEqualToString:NSStringFromClass([[values objectAtIndex:valueIndex] class])] || [@"NSNumber" isEqualToString:NSStringFromClass([[values objectAtIndex:valueIndex] class])]) {
+            if ([self isNumberClass:[values objectAtIndex:valueIndex]]) {
                 numberDataCount++;
             }
         }
 		if (numberDataCount >= 2) {
             for (NSUInteger valueIndex = 0; valueIndex < values.count - 1; valueIndex++) {
-                if ([@"NSCFNumber" isEqualToString:NSStringFromClass([[values objectAtIndex:valueIndex] class])] || [@"NSNumber" isEqualToString:NSStringFromClass([[values objectAtIndex:valueIndex] class])]) {
+                if ([self isNumberClass:[values objectAtIndex:valueIndex]]) {
                     NSUInteger x = valueIndex * stepX;
                     NSInteger y = ([[values objectAtIndex:valueIndex] intValue] - minY) * stepY;
                     
@@ -369,13 +369,13 @@
                     
                     CGPoint startPoint = CGPointMake(x + offsetX, self.frame.size.height - y - offsetY);
                     CGPoint endPoint;
-                    if ([@"NSCFNumber" isEqualToString:NSStringFromClass([[values objectAtIndex:valueIndex + 1] class])] || [@"NSNumber" isEqualToString:NSStringFromClass([[values objectAtIndex:valueIndex + 1] class])]) {
+                    if ([self isNumberClass:[values objectAtIndex:valueIndex + 1]]) {
                         x = (valueIndex + 1) * stepX;
                         y = ([[values objectAtIndex:valueIndex + 1] intValue] - minY) * stepY;
                         endPoint = CGPointMake(x + offsetX, self.frame.size.height - y - offsetY);                    
                     } else {
                         for (NSUInteger idx = valueIndex+1; idx < values.count; idx++) {
-                            if ([@"NSCFNumber" isEqualToString:NSStringFromClass([[values objectAtIndex:idx] class])] || [@"NSNumber" isEqualToString:NSStringFromClass([[values objectAtIndex:idx] class])]) {
+                            if ([self isNumberClass:[values objectAtIndex:idx]]) {
                                 x = idx * stepX;
                                 y = ([[values objectAtIndex:idx] intValue] - minY) * stepY;
                                 endPoint = CGPointMake(x + offsetX, self.frame.size.height - y - offsetY);
@@ -415,6 +415,15 @@
 		[_info drawInRect:CGRectMake(0.0f, 5.0f, self.frame.size.width, 20.0f) withFont:font
 			lineBreakMode:UILineBreakModeTailTruncation alignment:UITextAlignmentCenter];
 	}
+}
+
+- (BOOL)isNumberClass:(NSObject *)obj {
+    return (
+            [@"NSCFNumber" isEqualToString:NSStringFromClass([obj class])] ||
+            [@"NSNumber" isEqualToString:NSStringFromClass([obj class])] ||
+            [@"__NSCFNumber" isEqualToString:NSStringFromClass([obj class])] ||
+            [@"__NSNumber" isEqualToString:NSStringFromClass([obj class])]
+            );
 }
 
 - (void)xAxisWasTapped:(UIButton *)sendor{
