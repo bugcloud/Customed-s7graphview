@@ -217,7 +217,7 @@
 			CGContextStrokePath(c);
 		}
 		
-		if (i >= 0 && _drawAxisY) {
+		if (_drawAxisY) {
 			
 			NSNumber *valueToFormat = [NSNumber numberWithInt:value];
 			NSString *valueString;
