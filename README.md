@@ -6,7 +6,7 @@ For more about s7graphview, see (http://code.google.com/p/s7graphview/)
 
 **Now, I cannot find original project page.**
 
-## I costomed s7graphview blow.
+## I customed s7graphview blow.
 
 + You can define X and Y axis's unit.
 + You can touch the point of graph. You will draw plot's info writing delegate I added.
